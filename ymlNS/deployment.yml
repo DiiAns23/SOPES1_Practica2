@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: practica2-201903865
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grpc-deployment
+  namespace: practica2-201903865
+  labels:
+    app: grpc-deployment
+spec:
+  selector:
+    matchLabels:
+      app: grpc-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grpc-deployment
+    spec:
+      hostname: grpc-pod
+      containers:
+        - name: grpc-client
+          image: diians2302/api-client-grpc_201903865
+          env:
+          - name: HOST
+            value: grpc-pod
+          ports:
+            - containerPort: 8080
+        - name: grpc-server
+          image: diians2302/server-grpc_201903865
+          env:
+          - name: HOST
+            value: rabbitmq-0.rabbitmq.practica2-201903865.svc.cluster.local
+          ports:
+            - containerPort: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriber-deployment
+  namespace: practica2-201903865
+  labels:
+    app: subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriber
+  template:
+    metadata:
+      labels:
+        app: subscriber
+    spec:
+      hostname: grcp-host
+      containers:
+      - name: subscriber-cont
+        image: diians2302/suscriber-go
+        env:
+        - name: HOST
+          value: rabbitmq-0.rabbitmq.practica2-201903865.svc.cluster.local
+
+
+kubectl expose deploy/grpc-deployment --type=LoadBalancer --port=8080 --namespace=practica2-201903865
