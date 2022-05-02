@@ -11,6 +11,6 @@ RUN go build -o /go_rabbit
 
 CMD [ "/go_rabbit" ]
 
-### docker build --tag diians2302/suscriber-go .
-### docker push diians2302/suscriber-go
+# docker build --tag diians2302/suscriber-go .
+# docker push diians2302/suscriber-go
 ### docker run -d --name pruebarabbit diians2302/suscriber-go
